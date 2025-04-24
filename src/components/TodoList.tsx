@@ -1,21 +1,12 @@
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  Form,
-  Input,
-  List,
-  Row,
-  Tooltip,
-} from "antd";
+import { Button, Card, Checkbox, Form, Input, List } from "antd";
 import { useState } from "react";
 import { Task } from "../schemas/task.schema";
 
 export const TodoList = () => {
   const [form] = Form.useForm();
   const [tasks, setTasks] = useState<Task[]>([]);
+
   const handleAddTask = () => {
     form.validateFields().then((values) => {
       setTasks((prevTasks) => [
@@ -23,12 +14,14 @@ export const TodoList = () => {
         {
           id: prevTasks.length + 1,
           title: values.task,
+          description: values.description || "", // Añadir descripción
           completed: false,
         },
       ]);
       form.resetFields();
     });
   };
+
   const handleToggleTask = (taskId: number) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
@@ -36,6 +29,7 @@ export const TodoList = () => {
       )
     );
   };
+
   return (
     <Card
       title="TO-DO List 📖"
@@ -45,37 +39,59 @@ export const TodoList = () => {
         minHeight: 512,
       }}
     >
-      <Form form={form} onFinish={handleAddTask}>
-        <Row gutter={8}>
-          <Col flex="auto">
-            <Form.Item
-              name="task"
-              rules={[
-                {
-                  required: true,
-                  message: "Por favor, añade una tarea",
-                },
-              ]}
-            >
-              <Input placeholder="Añadir nueva tarea" autoComplete="off" />
-            </Form.Item>
-          </Col>
-          <Col>
-            <Tooltip title="Añadir tarea" placement="top">
-              <Button
-                htmlType="submit"
-                type="primary"
-                shape="circle"
-                icon={<PlusOutlined />}
-              />
-            </Tooltip>
-          </Col>
-        </Row>
+      <Form
+        form={form}
+        onFinish={handleAddTask}
+        autoComplete="off"
+        variant="filled"
+      >
+        <Form.Item
+          name="task"
+          style={{
+            marginBottom: 8,
+          }}
+          rules={[
+            {
+              required: true,
+              message: "Por favor, añade una tarea",
+            },
+            {
+              max: 255,
+              message: "El título no puede tener más de 255 caracteres",
+            },
+          ]}
+        >
+          <Input placeholder="Título" />
+        </Form.Item>
+        <Form.Item
+          name="description"
+          style={{
+            marginBottom: 12,
+          }}
+        >
+          <Input.TextArea
+            placeholder="Añadir descripción (opcional)"
+            autoSize={{ minRows: 2, maxRows: 4 }}
+          />
+        </Form.Item>
+        <Button
+          type="primary"
+          htmlType="submit"
+          icon={<PlusOutlined />}
+          style={{
+            width: "100%",
+          }}
+        >
+          Añadir tarea
+        </Button>
       </Form>
       <List
         dataSource={tasks}
         locale={{
           emptyText: "No hay tareas pendientes",
+        }}
+        style={{
+          marginTop: 16,
         }}
         size="small"
         renderItem={(task) => (
@@ -104,7 +120,7 @@ export const TodoList = () => {
               style={{ marginRight: 8 }}
             />
             <List.Item.Meta
-              description={
+              title={
                 <span
                   style={{
                     textDecoration: task.completed ? "line-through" : "none",
@@ -112,6 +128,16 @@ export const TodoList = () => {
                   }}
                 >
                   {task.title}
+                </span>
+              }
+              description={
+                <span
+                  style={{
+                    textDecoration: task.completed ? "line-through" : "none",
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  {task.description}
                 </span>
               }
             />
