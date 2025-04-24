@@ -5,8 +5,13 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-    env_file:
-      - ./backend/.env
+    environment:
+      - RUNNING_IN_DOCKER=1
+      - DB_NAME=todomysql
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_HOST=db
+      - DB_PORT=3306
     depends_on:
       - db
     command: >
