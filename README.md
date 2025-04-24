@@ -2,6 +2,10 @@
 
 Este proyecto es una aplicación de lista de tareas que utiliza un backend en Django, un frontend en React con Vite y una base de datos MySQL.
 
+<p align="center">
+  <img src="assets/todo-list.png" alt="Imagen de la aplicación" width="400"/>
+</p>
+
 ---
 
 ## Requisitos previos
@@ -107,7 +111,7 @@ Si prefieres configurar el proyecto manualmente, sigue estos pasos:
    - Inicia el servidor de desarrollo:
 
      ```bash
-       python manage.py runserver
+     python manage.py runserver
      ```
 
    - Accede al backend en [http://localhost:8000/api](http://localhost:8000/api)
