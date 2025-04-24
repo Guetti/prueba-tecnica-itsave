@@ -54,6 +54,11 @@ Este proyecto es una aplicación de lista de tareas que utiliza un backend en Dj
    ```bash
    docker-compose down
    ```
+5. **Volver a levantar los contenedores**: Si necesitas volver a levantar los contenedores después de haberlos detenido, puedes usar el siguiente comando:
+
+   ```bash
+   docker-compose up
+   ```
 
 ### Configuración manual
 
