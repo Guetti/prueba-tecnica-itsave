@@ -1,4 +1,4 @@
-import { ConfigProvider, theme } from "antd";
+import { ConfigProvider, theme, App as AntdApp } from "antd";
 import "./App.css";
 import { TodoList } from "./components/TodoList";
 
@@ -9,7 +9,9 @@ function App() {
         algorithm: theme.darkAlgorithm,
       }}
     >
-      <TodoList />
+      <AntdApp>
+        <TodoList />
+      </AntdApp>
     </ConfigProvider>
   );
 }

@@ -1,33 +1,32 @@
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Checkbox, Form, Input, List } from "antd";
-import { useState } from "react";
-import { Task } from "../schemas/task.schema";
+import { App, Button, Card, Checkbox, Form, Input, List } from "antd";
+import useTasks from "../hooks/useTasks";
 
 export const TodoList = () => {
+  const { message } = App.useApp();
   const [form] = Form.useForm();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const { tasks, createTask, toggleTask, deleteTask } = useTasks();
 
-  const handleAddTask = () => {
-    form.validateFields().then((values) => {
-      setTasks((prevTasks) => [
-        ...prevTasks,
-        {
-          id: prevTasks.length + 1,
-          title: values.task,
-          description: values.description || "", // Añadir descripción
-          completed: false,
-        },
-      ]);
-      form.resetFields();
+  const handleAddTask = async () => {
+    const values = await form.validateFields();
+
+    await createTask({
+      title: values.task,
+      description: values.description || "",
     });
+
+    message.success("Tarea añadida correctamente");
+    form.resetFields();
   };
 
-  const handleToggleTask = (taskId: number) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
+  const handleToggleTask = async (taskId: number) => {
+    await toggleTask(taskId);
+    message.success("Tarea actualizada correctamente");
+  };
+
+  const handleDeleteTask = async (taskId: number) => {
+    await deleteTask(taskId);
+    message.success("Tarea eliminada correctamente");
   };
 
   return (
@@ -106,11 +105,7 @@ export const TodoList = () => {
                 danger
                 shape="circle"
                 icon={<CloseOutlined />}
-                onClick={() => {
-                  setTasks((prevTasks) =>
-                    prevTasks.filter((t) => t.id !== task.id)
-                  );
-                }}
+                onClick={() => handleDeleteTask(task.id)}
               />,
             ]}
           >
