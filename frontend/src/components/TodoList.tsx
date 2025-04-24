@@ -116,8 +116,8 @@ export const TodoList = () => {
               message: "El título es obligatorio",
             },
             {
-              max: 255,
-              message: "El título no puede tener más de 255 caracteres",
+              max: 100,
+              message: "El título no puede tener más de 100 caracteres",
             },
           ]}
         >
@@ -151,7 +151,11 @@ export const TodoList = () => {
         <List
           dataSource={tasks}
           locale={{
-            emptyText: "No hay tareas pendientes",
+            emptyText: error
+              ? "Ha ocurrido un error al sincronizar con la base de datos, asegurate de que el servidor está corriendo y vuelve a cargar la página"
+              : initialLoading
+              ? " "
+              : "No hay tareas",
           }}
           style={{
             marginTop: 16,
