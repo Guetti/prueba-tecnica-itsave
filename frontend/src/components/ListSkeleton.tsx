@@ -12,7 +12,7 @@ const TaskListSkeleton = () => {
       locale={{ emptyText: "Cargando tareas..." }}
       style={{ marginTop: 16 }}
       size="small"
-      renderItem={(item) => (
+      renderItem={(item, index) => (
         <List.Item
           key={item.key}
           style={{
@@ -36,7 +36,7 @@ const TaskListSkeleton = () => {
                 title={false}
                 paragraph={{ rows: 1, width: "60%" }}
                 style={{
-                  marginBottom: 16,
+                  marginBottom: index === skeletonItems.length ? 0 : 16,
                 }}
               />
             }

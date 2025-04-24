@@ -12,12 +12,15 @@ import {
 } from "antd";
 import useTasks from "../hooks/useTasks";
 import TaskListSkeleton from "./ListSkeleton";
+import { useEffect, useState } from "react";
 
 export const TodoList = () => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
   const { tasks, createTask, toggleTask, deleteTask, initialLoading, error } =
     useTasks();
+
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
   const badgeStatus: {
     color: "processing" | "error" | "success";
@@ -59,6 +62,16 @@ export const TodoList = () => {
     message.success("Tarea eliminada correctamente");
   };
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowSkeleton(true); // Solo muestra el Skeleton si tarda más de 300ms
+    }, 300);
+
+    if (!initialLoading) {
+      clearTimeout(timeout); // Limpia el timeout si la carga inicial termina antes de 300ms
+    }
+  }, [initialLoading, error]);
+
   return (
     <Card
       title={
@@ -82,7 +95,7 @@ export const TodoList = () => {
       variant="borderless"
       style={{
         width: 640,
-        minHeight: 512,
+        minHeight: 640,
       }}
     >
       <Form
@@ -90,6 +103,7 @@ export const TodoList = () => {
         onFinish={handleAddTask}
         autoComplete="off"
         variant="filled"
+        disabled={initialLoading || error !== null}
       >
         <Form.Item
           name="task"
@@ -99,7 +113,7 @@ export const TodoList = () => {
           rules={[
             {
               required: true,
-              message: "Por favor, añade una tarea",
+              message: "El título es obligatorio",
             },
             {
               max: 255,
@@ -131,7 +145,7 @@ export const TodoList = () => {
           Añadir tarea
         </Button>
       </Form>
-      {initialLoading ? (
+      {initialLoading && showSkeleton ? (
         TaskListSkeleton()
       ) : (
         <List

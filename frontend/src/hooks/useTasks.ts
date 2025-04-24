@@ -10,7 +10,6 @@ const useTasks = () => {
 
   const fetchTasks = async () => {
     setInitialLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simular un retraso de 1 segundo
     try {
       const response = await get();
       const tasksData = response.data.map((task: Task) => ({
