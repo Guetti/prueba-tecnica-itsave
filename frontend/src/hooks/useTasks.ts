@@ -4,11 +4,13 @@ import { create, remove, get, toggle } from "../services/taskService";
 
 const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTasks = async () => {
-    setLoading(true);
+    setInitialLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simular un retraso de 1 segundo
     try {
       const response = await get();
       const tasksData = response.data.map((task: Task) => ({
@@ -20,12 +22,12 @@ const useTasks = () => {
       setError("Error fetching tasks");
       console.error("Error fetching tasks:", err);
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
     }
   };
 
   const createTask = async (data: { title: string; description: string }) => {
-    setLoading(true);
+    setActionLoading(true);
     try {
       const response = await create(data);
       console.log("Task created:", response.data);
@@ -43,7 +45,7 @@ const useTasks = () => {
       setError("Error creating task");
       console.error("Error creating task:", err);
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
@@ -57,7 +59,7 @@ const useTasks = () => {
   };
 
   const deleteTask = async (taskId: number) => {
-    setLoading(true);
+    setActionLoading(true);
     try {
       await remove(taskId);
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
@@ -65,7 +67,7 @@ const useTasks = () => {
       setError("Error deleting task");
       console.error("Error deleting task:", err);
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
@@ -75,7 +77,8 @@ const useTasks = () => {
 
   return {
     tasks,
-    loading,
+    initialLoading,
+    actionLoading,
     error,
     fetchTasks,
     createTask,

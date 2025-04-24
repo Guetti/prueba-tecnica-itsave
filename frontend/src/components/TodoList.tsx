@@ -1,11 +1,41 @@
 import { CloseOutlined, PlusOutlined } from "@ant-design/icons";
-import { App, Button, Card, Checkbox, Form, Input, List } from "antd";
+import {
+  App,
+  Badge,
+  Button,
+  Card,
+  Checkbox,
+  Flex,
+  Form,
+  Input,
+  List,
+} from "antd";
 import useTasks from "../hooks/useTasks";
+import TaskListSkeleton from "./ListSkeleton";
 
 export const TodoList = () => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
-  const { tasks, createTask, toggleTask, deleteTask } = useTasks();
+  const { tasks, createTask, toggleTask, deleteTask, initialLoading, error } =
+    useTasks();
+
+  const badgeStatus: {
+    color: "processing" | "error" | "success";
+    text: string;
+  } = initialLoading
+    ? {
+        color: "processing",
+        text: "Sincronizando...",
+      }
+    : error
+    ? {
+        color: "error",
+        text: "Error al sincronizar",
+      }
+    : {
+        color: "success",
+        text: "Sincronizado",
+      };
 
   const handleAddTask = async () => {
     const values = await form.validateFields();
@@ -31,7 +61,24 @@ export const TodoList = () => {
 
   return (
     <Card
-      title="TO-DO List 📖"
+      title={
+        <Flex
+          justify="space-between"
+          align="center"
+          style={{
+            width: "100%",
+          }}
+        >
+          <span>TO-DO List 📖</span>
+          <Badge
+            status={badgeStatus.color}
+            text={badgeStatus.text}
+            style={{
+              backgroundColor: badgeStatus.color,
+            }}
+          />
+        </Flex>
+      }
       variant="borderless"
       style={{
         width: 640,
@@ -84,61 +131,65 @@ export const TodoList = () => {
           Añadir tarea
         </Button>
       </Form>
-      <List
-        dataSource={tasks}
-        locale={{
-          emptyText: "No hay tareas pendientes",
-        }}
-        style={{
-          marginTop: 16,
-        }}
-        size="small"
-        renderItem={(task) => (
-          <List.Item
-            key={task.id}
-            style={{
-              alignItems: "flex-start",
-            }}
-            actions={[
-              <Button
-                type="text"
-                danger
-                shape="circle"
-                icon={<CloseOutlined />}
-                onClick={() => handleDeleteTask(task.id)}
-              />,
-            ]}
-          >
-            <Checkbox
-              checked={task.completed}
-              onChange={() => handleToggleTask(task.id)}
-              style={{ marginRight: 8 }}
-            />
-            <List.Item.Meta
-              title={
-                <span
-                  style={{
-                    textDecoration: task.completed ? "line-through" : "none",
-                    overflowWrap: "break-word",
-                  }}
-                >
-                  {task.title}
-                </span>
-              }
-              description={
-                <span
-                  style={{
-                    textDecoration: task.completed ? "line-through" : "none",
-                    overflowWrap: "break-word",
-                  }}
-                >
-                  {task.description}
-                </span>
-              }
-            />
-          </List.Item>
-        )}
-      />
+      {initialLoading ? (
+        TaskListSkeleton()
+      ) : (
+        <List
+          dataSource={tasks}
+          locale={{
+            emptyText: "No hay tareas pendientes",
+          }}
+          style={{
+            marginTop: 16,
+          }}
+          size="small"
+          renderItem={(task) => (
+            <List.Item
+              key={task.id}
+              style={{
+                alignItems: "flex-start",
+              }}
+              actions={[
+                <Button
+                  type="text"
+                  danger
+                  shape="circle"
+                  icon={<CloseOutlined />}
+                  onClick={() => handleDeleteTask(task.id)}
+                />,
+              ]}
+            >
+              <Checkbox
+                checked={task.completed}
+                onChange={() => handleToggleTask(task.id)}
+                style={{ marginRight: 8 }}
+              />
+              <List.Item.Meta
+                title={
+                  <span
+                    style={{
+                      textDecoration: task.completed ? "line-through" : "none",
+                      overflowWrap: "break-word",
+                    }}
+                  >
+                    {task.title}
+                  </span>
+                }
+                description={
+                  <span
+                    style={{
+                      textDecoration: task.completed ? "line-through" : "none",
+                      overflowWrap: "break-word",
+                    }}
+                  >
+                    {task.description}
+                  </span>
+                }
+              />
+            </List.Item>
+          )}
+        />
+      )}
     </Card>
   );
 };
