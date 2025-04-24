@@ -13,7 +13,13 @@ import {
 import useTasks from "../hooks/useTasks";
 import TaskListSkeleton from "./ListSkeleton";
 import { useEffect, useState } from "react";
+import { Task } from "../schemas/task.schema";
 
+/**
+ * * TodoList component that displays a list of tasks and allows the user to
+ * * add, toggle, and delete tasks. It synchronizes with a backend API
+ * * to fetch and update tasks using the useTasks hook.
+ */
 export const TodoList = () => {
   const { message } = App.useApp();
   const [form] = Form.useForm();
@@ -22,24 +28,22 @@ export const TodoList = () => {
 
   const [showSkeleton, setShowSkeleton] = useState(false);
 
-  const badgeStatus: {
-    color: "processing" | "error" | "success";
+  const getBadgeStatus = (): {
+    color: "error" | "processing" | "success";
     text: string;
-  } = initialLoading
-    ? {
-        color: "processing",
-        text: "Sincronizando...",
-      }
-    : error
-    ? {
-        color: "error",
-        text: "Error al sincronizar",
-      }
-    : {
-        color: "success",
-        text: "Sincronizado",
-      };
+  } => {
+    if (initialLoading)
+      return { color: "processing", text: "Sincronizando..." };
+    if (error) return { color: "error", text: "Error al sincronizar" };
+    return { color: "success", text: "Sincronizado" };
+  };
 
+  const badgeStatus = getBadgeStatus();
+
+  /**
+   * Handles the addition of a new task. It validates the form fields,
+   * creates a new task using the createTask function, and resets the form fields.
+   */
   const handleAddTask = async () => {
     const values = await form.validateFields();
 
@@ -52,25 +56,80 @@ export const TodoList = () => {
     form.resetFields();
   };
 
+  /**
+   * Handles the toggling of a task's completion status. It updates the task
+   * using the toggleTask function and displays a success message.
+   */
   const handleToggleTask = async (taskId: number) => {
     await toggleTask(taskId);
     message.success("Tarea actualizada correctamente");
   };
 
+  /**
+   * Handles the deletion of a task. It removes the task using the deleteTask
+   * function and displays a success message.
+   */
   const handleDeleteTask = async (taskId: number) => {
     await deleteTask(taskId);
     message.success("Tarea eliminada correctamente");
   };
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setShowSkeleton(true); // Solo muestra el Skeleton si tarda más de 300ms
-    }, 300);
+  /**
+   * Renders a task item in the list. It displays the task title and description,
+   * along with a checkbox to mark it as completed and a button to delete it.
+   */
+  const TaskItem = ({ task }: { task: Task }) => (
+    <List.Item
+      key={task.id}
+      style={{ alignItems: "flex-start" }}
+      actions={[
+        <Button
+          type="text"
+          danger
+          shape="circle"
+          icon={<CloseOutlined />}
+          onClick={() => handleDeleteTask(task.id)}
+        />,
+      ]}
+    >
+      <Checkbox
+        checked={task.completed}
+        onChange={() => handleToggleTask(task.id)}
+        style={{ marginRight: 8 }}
+      />
+      <List.Item.Meta
+        title={
+          <span
+            style={{
+              textDecoration: task.completed ? "line-through" : "none",
+              overflowWrap: "break-word",
+            }}
+          >
+            {task.title}
+          </span>
+        }
+        description={
+          <span
+            style={{
+              textDecoration: task.completed ? "line-through" : "none",
+              overflowWrap: "break-word",
+            }}
+          >
+            {task.description}
+          </span>
+        }
+      />
+    </List.Item>
+  );
 
-    if (!initialLoading) {
-      clearTimeout(timeout); // Limpia el timeout si la carga inicial termina antes de 300ms
-    }
-  }, [initialLoading, error]);
+  useEffect(() => {
+    // Show skeleton after 300ms if initialLoading is true
+    // to avoid flickering when the component mounts
+    // and the initial loading is fast
+    const timeout = setTimeout(() => setShowSkeleton(true), 300);
+    if (!initialLoading) clearTimeout(timeout);
+    return () => clearTimeout(timeout);
+  }, [initialLoading]);
 
   return (
     <Card
@@ -161,51 +220,7 @@ export const TodoList = () => {
             marginTop: 16,
           }}
           size="small"
-          renderItem={(task) => (
-            <List.Item
-              key={task.id}
-              style={{
-                alignItems: "flex-start",
-              }}
-              actions={[
-                <Button
-                  type="text"
-                  danger
-                  shape="circle"
-                  icon={<CloseOutlined />}
-                  onClick={() => handleDeleteTask(task.id)}
-                />,
-              ]}
-            >
-              <Checkbox
-                checked={task.completed}
-                onChange={() => handleToggleTask(task.id)}
-                style={{ marginRight: 8 }}
-              />
-              <List.Item.Meta
-                title={
-                  <span
-                    style={{
-                      textDecoration: task.completed ? "line-through" : "none",
-                      overflowWrap: "break-word",
-                    }}
-                  >
-                    {task.title}
-                  </span>
-                }
-                description={
-                  <span
-                    style={{
-                      textDecoration: task.completed ? "line-through" : "none",
-                      overflowWrap: "break-word",
-                    }}
-                  >
-                    {task.description}
-                  </span>
-                }
-              />
-            </List.Item>
-          )}
+          renderItem={(task) => <TaskItem task={task} key={task.id} />}
         />
       )}
     </Card>

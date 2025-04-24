@@ -1,6 +1,10 @@
 import { List, Skeleton, Button, Checkbox } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
 
+/**
+ * Skeleton component for the task list.
+ * Displays a loading state with skeleton items.
+ */
 const TaskListSkeleton = () => {
   const skeletonItems = Array.from({ length: 4 }, (_, index) => ({
     key: `skeleton-${index}`,

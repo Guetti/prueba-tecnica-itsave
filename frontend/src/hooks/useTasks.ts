@@ -2,12 +2,21 @@ import { useEffect, useState } from "react";
 import { Task } from "../schemas/task.schema";
 import { create, remove, get, toggle } from "../services/taskService";
 
+/**
+ * * Custom hook to manage tasks.
+ * * It provides functions to fetch, create, toggle, and delete tasks.
+ * * It also manages loading states and error handling.
+ */
 const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * Fetches tasks from the API and sets them in the state.
+   * It also handles loading states and error handling.
+   */
   const fetchTasks = async () => {
     setInitialLoading(true);
     try {
@@ -25,6 +34,10 @@ const useTasks = () => {
     }
   };
 
+  /**
+   * Creates a new task using the API and updates the state.
+   * It also handles loading states and error handling.
+   */
   const createTask = async (data: { title: string; description: string }) => {
     setActionLoading(true);
     try {
@@ -48,6 +61,10 @@ const useTasks = () => {
     }
   };
 
+  /**
+   * Toggles the completion status of a task using the API and updates the state.
+   * It also handles loading states and error handling.
+   */
   const toggleTask = async (taskId: number) => {
     await toggle(taskId, !tasks.find((task) => task.id === taskId)?.completed);
     setTasks((prevTasks) =>
@@ -57,6 +74,10 @@ const useTasks = () => {
     );
   };
 
+  /**
+   * Deletes a task using the API and updates the state.
+   * It also handles loading states and error handling.
+   */
   const deleteTask = async (taskId: number) => {
     setActionLoading(true);
     try {
