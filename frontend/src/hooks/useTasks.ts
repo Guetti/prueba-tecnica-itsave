@@ -66,12 +66,22 @@ const useTasks = () => {
    * It also handles loading states and error handling.
    */
   const toggleTask = async (taskId: number) => {
-    await toggle(taskId, !tasks.find((task) => task.id === taskId)?.completed);
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
-      )
-    );
+    try {
+      await toggle(
+        taskId,
+        !tasks.find((task) => task.id === taskId)?.completed
+      );
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === taskId ? { ...task, completed: !task.completed } : task
+        )
+      );
+    } catch (err) {
+      setError("Error toggling task");
+      console.error("Error toggling task:", err);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   /**
