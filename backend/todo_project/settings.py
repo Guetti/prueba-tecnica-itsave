@@ -90,7 +90,7 @@ if os.getenv('RUNNING_IN_DOCKER', '0') == '1':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.getenv('DB_NAME', 'todomysql'),
+            'NAME': os.getenv('DB_NAME', 'todo_list'),
             'USER': os.getenv('DB_USER', 'root'),
             'PASSWORD': os.getenv('DB_PASSWORD', 'root'),
             'HOST': os.getenv('DB_HOST', 'localhost'),
@@ -106,7 +106,7 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': env('DB_NAME', default='todomysql'),
+            'NAME': env('DB_NAME', default='todo_list'),
             'USER': env('DB_USER', default='root'),
             'PASSWORD': env('DB_PASSWORD', default=''),
             'HOST': env('DB_HOST', default='localhost'),
