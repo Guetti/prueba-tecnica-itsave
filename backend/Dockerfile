@@ -1,7 +1,12 @@
-FROM python:3.11-bullseye
+FROM python:alpine
 
-# Instala netcat
-RUN apt-get update && apt-get install -y netcat && apt-get clean
+# Instala netcat y dependencias para compilar mysqlclient
+RUN apk update && apk add --no-cache \
+    netcat-openbsd \
+    build-base \
+    mariadb-dev \
+    pkgconfig \
+    python3-dev
 
 # Establece el directorio de trabajo
 WORKDIR /app

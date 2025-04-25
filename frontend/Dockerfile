@@ -1,5 +1,5 @@
 # Usa una imagen de Node específica basada en Debian (compatible con rollup-linux-x64-gnu)
-FROM node:18-bullseye
+FROM node:slim
 
 # Establece el directorio de trabajo en el contenedor
 WORKDIR /app
